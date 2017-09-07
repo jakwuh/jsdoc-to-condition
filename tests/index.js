@@ -19,7 +19,11 @@ let suite = [
     {type: '{null}', valid: [null], invalid: [undefined, 0, {}, [1]]},
     {type: '{undefined}', valid: [undefined], invalid: [null, 0, false, {}, [1]]},
     {type: '{function(!string, ?number=)}', valid: [mockFunction, mockClass], invalid: [{}, [2], false, undefined]},
-    {type: '{function(!string, number=): boolean}', valid: [mockFunction, mockClass], invalid: [{}, [2], false, undefined]},
+    {
+        type: '{function(!string, number=): boolean}',
+        valid: [mockFunction, mockClass],
+        invalid: [{}, [2], false, undefined]
+    },
     {type: '{Function}', valid: [mockFunction, mockClass], invalid: [{}, [2], false, undefined]},
     {type: '{string}', valid: ['a'], invalid: [new String('a'), 2, {}, undefined]},
     {type: '{String}', valid: ['a'], invalid: [new String('a'), 2, {}, undefined]},
@@ -54,12 +58,12 @@ for (let suiteCase of suite) {
         if (!validation) {
             t.is(invalid.length, 0);
         } else {
-            for (let value of valid) {
+            valid.forEach(function (value) {
                 t.true(eval(validation));
-            }
-            for (let value of invalid) {
+            });
+            invalid.forEach(function (value) {
                 t.false(eval(validation));
-            }
+            });
         }
     });
 }
