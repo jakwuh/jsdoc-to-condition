@@ -1,0 +1,40 @@
+{
+    "name": "jsdoc-to-condition",
+    "version": "1.0.0",
+    "main": "index.js",
+    "author": "jakwuh <jakwuh@yandex-team.ru>",
+    "license": "MIT",
+    "scripts": {
+        "test": "npm run build && ava",
+        "build": "mkdir -p lib && babel src -d lib --presets es2015",
+        "prepublish": "npm run build"
+    },
+    "dependencies": {
+        "doctrine": "^2.0.0"
+    },
+    "devDependencies": {
+        "ava": "^0.22.0",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "babel-preset-es2015": "^6.24.1"
+    },
+    "ava": {
+        "files": [
+            "./tests/index.js"
+        ],
+        "source": [
+            "./src/*.js"
+        ],
+        "babel": "inherit",
+        "require": [
+            "babel-register"
+        ]
+    },
+    "babel": {
+        "presets": [
+            "@ava/stage-4"
+        ],
+        "plugins": [
+            "transform-object-rest-spread"
+        ]
+    }
+}
