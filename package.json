@@ -34,5 +34,8 @@
       "babel-polyfill",
       "babel-register"
     ]
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
