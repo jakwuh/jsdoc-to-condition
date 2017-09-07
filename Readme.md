@@ -11,7 +11,7 @@
 /**
  * @param {[string, number?]} a
  * @param {Object.<string, number>} b
- * @param {[string, number]} c
+ * @param {string|number} c
  */
 
 // generates the following:
