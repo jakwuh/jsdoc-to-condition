@@ -1,0 +1,9 @@
+.idea/
+node_modules/
+package-lock.json
+yarn.lock
+tests/
+.babelrc
+.gitignore
+.npmignore
+.travis.yml
