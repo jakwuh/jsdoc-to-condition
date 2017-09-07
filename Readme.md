@@ -28,9 +28,9 @@ yarn add jsdoc-to-condition --dev
 ```
 
 ```js
-import {typeToValidation} from 'jsdoc-to-condition';
+import {parseType} from 'jsdoc-to-condition';
 
-console.log(typeToValidation(`{string} varName`));
+console.log(parseType(`{string} varName`)[0].validation);
 // ((typeof varName === 'string'))
 ```
 

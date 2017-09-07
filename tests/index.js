@@ -1,4 +1,4 @@
-import {typeToValidation} from '../lib/index';
+import {parseType} from '../lib/index';
 import test from 'ava';
 
 function mockFunction() {
@@ -52,7 +52,7 @@ for (let suiteCase of suite) {
     let doc = `${type} value`;
 
     test(doc, t => {
-        let validation = typeToValidation(doc);
+        let validation = parseType(doc)[0].validation;
 
         if (!validation) {
             t.is(invalid.length, 0);

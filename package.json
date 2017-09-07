@@ -1,7 +1,8 @@
 {
     "name": "jsdoc-to-condition",
-    "version": "1.0.0",
-    "main": "index.js",
+    "description": "Creates validation code from jsdoc comments",
+    "version": "0.1.0",
+    "main": "lib/index.js",
     "author": "jakwuh <jakwuh@yandex-team.ru>",
     "license": "MIT",
     "scripts": {

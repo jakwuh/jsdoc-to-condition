@@ -1,5 +1,5 @@
 import doctrine from 'doctrine';
-import {tagsToValidation} from './validations';
+import {h, t, generateValidation} from './validations';
 
 let doctrineOptions = {
     unwrap: false,
@@ -8,13 +8,13 @@ let doctrineOptions = {
     tags: ['param']
 };
 
-export function typeToValidation(text, options = {}) {
+export function parseType(text, options) {
     let comment = `@param ${text}`;
 
-    return commentToValidation(comment, options);
+    return parseComment(comment, options);
 }
 
-export function commentToValidation(text, options = {}) {
+export function parseComment(text, options = {}) {
     let parseOptions = {
         ...doctrineOptions,
         ...options
@@ -22,5 +22,14 @@ export function commentToValidation(text, options = {}) {
 
     let {tags} = doctrine.parse(text, parseOptions);
 
-    return tagsToValidation(tags);
+    return tags.map(tag => {
+        let validation = generateValidation(tag.name, tag.type);
+
+        return {
+            h,
+            t,
+            tag,
+            validation
+        }
+    }).filter(Boolean);
 }

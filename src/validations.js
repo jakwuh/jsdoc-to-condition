@@ -1,4 +1,4 @@
-let h = {
+export let h = {
     and(...exprs) {
         return `(${exprs.join(' && ')})`;
     },
@@ -47,7 +47,7 @@ let h = {
     }
 };
 
-let t = {
+export let t = {
     isUndefinedLiteral(type) {
         return type.type === 'UndefinedLiteral'
     },
@@ -230,21 +230,5 @@ export function generateValidation(name, type) {
     // {Object.<string, number>}
     if (t.isTypeApplication(type)) {
         return generateApplicationValidation(name, type.expression, type.applications);
-    }
-}
-
-export function tagsToValidation(tags) {
-    let validations = [];
-
-    tags.forEach(tag => {
-        let validation = generateValidation(tag.name, tag.type);
-
-        if (validation) {
-            validations.push(validation);
-        }
-    });
-
-    if (validations.length) {
-        return h.and(...validations);
     }
 }
