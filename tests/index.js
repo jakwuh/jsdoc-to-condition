@@ -5,15 +5,12 @@ function mockFunction() {
 }
 
 function mockClass() {
-
 }
 
 class Bar {
-
 }
 
 class Foo {
-
 }
 
 let suite = [
