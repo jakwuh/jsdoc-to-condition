@@ -85,3 +85,13 @@ for (let suiteCase of suite) {
         }
     });
 }
+
+test('bindings', t => {
+    let item = parseType(`{string} method`, {bindings: {'method': '_method'}})[0];
+    t.is(item.validation, '(typeof _method === \'string\')');
+});
+
+test('bindings 2', t => {
+    let item = parseType(`{string} deps.str`, {bindings: {'deps': '_deps'}})[0];
+    t.is(item.validation, '(typeof _deps.str === \'string\')');
+});

@@ -1,29 +1,39 @@
 import doctrine from 'doctrine';
 import {h, t, generateValidation} from './validations';
 
-let doctrineOptions = {
-    unwrap: false,
-    sloppy: true,
-    recoverable: true,
-    tags: ['param']
-};
-
 export function parseType(text, options) {
     let comment = `@param ${text}`;
 
     return parseComment(comment, options);
 }
 
-export function parseComment(text, options = {}) {
+export function parseComment(text, {
+    unwrap = false,
+    sloppy = true,
+    recoverable = true,
+    tags = ['param'],
+    bindings = {}
+} = {}) {
     let parseOptions = {
-        ...doctrineOptions,
-        ...options
+        unwrap,
+        sloppy,
+        recoverable,
+        tags
     };
 
-    let {tags} = doctrine.parse(text, parseOptions);
+    let parsed = doctrine.parse(text, parseOptions);
 
-    return tags.map(tag => {
-        let validation = generateValidation(tag.name, tag.type);
+    return parsed.tags.map(tag => {
+        let basename = tag.name.split('.')[0],
+            rest = tag.name.slice(basename.length);
+
+        if (basename in bindings) {
+            tag.binding = bindings[basename] + rest;
+        } else {
+            tag.binding = tag.name;
+        }
+
+        let validation = generateValidation(tag.binding, tag.type);
 
         if (validation) {
             return {
