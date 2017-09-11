@@ -25,11 +25,13 @@ export function parseComment(text, options = {}) {
     return tags.map(tag => {
         let validation = generateValidation(tag.name, tag.type);
 
-        return {
-            h,
-            t,
-            tag,
-            validation
+        if (validation) {
+            return {
+                h,
+                t,
+                tag,
+                validation
+            }
         }
     }).filter(Boolean);
 }

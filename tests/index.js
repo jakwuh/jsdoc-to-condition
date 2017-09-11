@@ -13,6 +13,8 @@ class Bar {
 class Foo {
 }
 
+let obj = {};
+
 let suite = [
     {type: '{*}', valid: [null, undefined, 0, false, 2, {}, [1]], invalid: []},
     {type: '{?}', valid: [null, undefined, 0, false, 2, {}, [1]], invalid: []},
@@ -28,6 +30,8 @@ let suite = [
     {type: '{string}', valid: ['a'], invalid: [new String('a'), 2, {}, undefined]},
     {type: '{String}', valid: ['a'], invalid: [new String('a'), 2, {}, undefined]},
     {type: '{Bar}', valid: [new Bar], invalid: [Bar, Foo, new Foo, {}, mockFunction, undefined, null]},
+    {type: '{BarFoo}', valid: [new Bar, Bar, Foo, new Foo, {}, mockFunction, undefined, null], invalid: []},
+    {type: '{obj}', valid: [new Bar, Bar, Foo, new Foo, {}, mockFunction, undefined, null], invalid: []},
     {type: '{string=}', valid: [undefined, '2'], invalid: [new String('a'), 2, {}]},
     {type: '{?string}', valid: [undefined, null, 's'], invalid: [new String('a'), 2, {}]},
     {type: '{!string}', valid: ['s'], invalid: [undefined, null, new String('a'), 2, {}]},
@@ -38,7 +42,21 @@ let suite = [
     {type: '{[string, number?]}', valid: [['2', 2], ['2']], invalid: [[2, 's'], 2, 's', []]},
     {type: '{Array.<string | number>}', valid: [['2', 2, '2', 3]], invalid: [[2, 's', undefined]]},
     {type: '{string[]}', valid: [['s', '2'], []], invalid: [[2, 's'], 's', null, undefined]},
-    {type: '{Object.<string, number>}', valid: [{'2': 2}, {}], invalid: [{'s': 's'}, [], undefined, null]}
+    {type: '{Object.<string, number>}', valid: [{'2': 2}, {}], invalid: [{'s': 's'}, [], undefined, null]},
+    {
+        type: '{{results: object[], count: number, next: *, previous: *}}',
+        valid: [{results: [{}, {}], count: 2, next: 0, previous: null}],
+        invalid: [
+            {results: {}, count: 2, next: 0, previous: null},
+            {results: [{}, {}], count: false, next: 0, previous: null},
+            {results: [{}, {}], count: 2, next: 0},
+            {count: 2, next: 0, previous: null}
+        ]
+    },
+    {type: '{*=}', valid: [null, undefined, false, []], invalid: []},
+    {type: '{*?=}', valid: [null, undefined, false, []], invalid: []},
+    {type: '{?=}', valid: [null, undefined, false, []], invalid: []},
+    {type: '{null=}', valid: [null, undefined], invalid: [0, false, [], {}]}
 ];
 
 let doctrineOptions = {
@@ -53,16 +71,16 @@ for (let suiteCase of suite) {
     let doc = `${type} value`;
 
     test(doc, t => {
-        let validation = parseType(doc)[0].validation;
+        let item = parseType(doc)[0];
 
-        if (!validation) {
+        if (!item) {
             t.is(invalid.length, 0);
         } else {
             valid.forEach(function (value) {
-                t.true(eval(validation));
+                t.true(eval(item.validation));
             });
             invalid.forEach(function (value) {
-                t.false(eval(validation));
+                t.false(eval(item.validation));
             });
         }
     });

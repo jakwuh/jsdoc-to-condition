@@ -1,12 +1,19 @@
 export let h = {
     and(...exprs) {
-        return `(${exprs.join(' && ')})`;
+        // empty expression means 'true'
+        return `(${exprs.filter(Boolean).join(' && ')})`;
     },
     or(...exprs) {
-        return `(${exprs.join(' || ')})`;
+        // empty expression means 'true'
+        if (exprs.every(Boolean)) {
+            return `(${exprs.filter(Boolean).join(' || ')})`;
+        }
     },
     not(expr) {
         return '!' + expr;
+    },
+    ternary(condition, value, inverse) {
+        return `(${condition}?${value}:${inverse})`;
     },
     true() {
         return 'true';
@@ -21,7 +28,23 @@ export let h = {
         return `(typeof ${expr} === '${type}')`;
     },
     instanceOf(name, constructor) {
-        return `(${name} instanceof ${constructor})`;
+        let h = this,
+            hasInstanceSymbol = 'Symbol.hasInstance',
+            hasInstanceFn = `${constructor}[${hasInstanceSymbol}]`,
+            constructorUndefined = h.typeOf(constructor, 'undefined'),
+            constructorNotAFn = h.not(h.isFunction(constructor)),
+            browserHasInstance = h.and(h.isFunction('Symbol'), h.isSymbol(hasInstanceSymbol)),
+            constructorHasInstance = h.isFunction(hasInstanceFn);
+
+        return h.or(
+            constructorUndefined,
+            constructorNotAFn,
+            h.ternary(
+                h.and(browserHasInstance, constructorHasInstance),
+                `${hasInstanceFn}(${name})`,
+                `${name} instanceof ${constructor}`
+            )
+        );
     },
     hasOwnProperty(object, prop) {
         return `Object.prototype.hasOwnProperty.call(${object}, '${prop}')`;
@@ -34,6 +57,12 @@ export let h = {
     },
     isUndefined(name) {
         return `(${name} === undefined)`;
+    },
+    isFunction(name) {
+        return this.typeOf(name, 'function');
+    },
+    isSymbol(name) {
+        return this.typeOf(name, 'symbol');
     },
     every(name, type) {
         return `${name}.every(function(n){return ${generateValidation('n', type)};})`;
@@ -139,8 +168,8 @@ function generateRecordValidation(name, fields) {
         let validations = [h.hasOwnProperty(name, field.key)];
 
         if (field.value) {
-            let subName = `${name}.${field.key}`;
-            validations.push(generateValidation(subName, field.value))
+            let propName = `${name}.${field.key}`;
+            validations.push(generateValidation(propName, field.value))
         }
 
         return h.and(...validations);
@@ -177,7 +206,7 @@ export function generateValidation(name, type) {
     // {function(!string, ?number=)}
     // {function(!string, number=): boolean}
     if (t.isFunctionType(type)) {
-        return h.typeOf(name, 'function');
+        return h.isFunction(name);
     }
 
     // {string}
